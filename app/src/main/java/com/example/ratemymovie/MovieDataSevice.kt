@@ -7,7 +7,7 @@ import retrofit2.http.Query
 
 interface MovieDataSevice {
     @GET(".")
-    fun getMovieDataByTitle(@Query("s") name: String, @Query("apikey") apikey: String) : Call<List<MovieData>>
+    fun getMovieDataByTitle(@Query("s") name: String, @Query("apikey") apikey: String) : Call<MovieWrapper>
 }
 
 // baseUrl + get + ?s=name&apikey=blah

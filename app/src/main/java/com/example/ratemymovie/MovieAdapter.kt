@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.backendless.Backendless
 import com.backendless.async.callback.AsyncCallback
 import com.backendless.exceptions.BackendlessFault
-class MovieAdapter(var movieList: MutableList<MovieData>):
+class MovieAdapter(var movieList: MovieWrapper?):
     RecyclerView.Adapter<MovieAdapter.ViewHolder>() {
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val textViewMovieName: TextView
@@ -34,7 +34,9 @@ class MovieAdapter(var movieList: MutableList<MovieData>):
         return ViewHolder(view)
     }
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val movie = movieList[position]
+        val movie = movieList!!.results!!.get(position)
+
+        holder.textViewMovieName.text = movie.name
         var context = holder.textViewMovieName.context
         holder.textViewMovieName.text = movie.name
 
@@ -45,10 +47,10 @@ class MovieAdapter(var movieList: MutableList<MovieData>):
         }
     }
     private fun deleteFromBackendless(position: Int, con : Context) {
-        Backendless.Data.of(MovieData::class.java).remove(movieList[position],
+        Backendless.Data.of(MovieData::class.java).remove(movieList!!.results!!.get(position),
             object : AsyncCallback<Long?> {
                 override fun handleResponse(response: Long?) {
-                    Toast.makeText(con, "${movieList[position].name} Deleted", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(con, "${movieList!!.results!!.get(position).name} Deleted", Toast.LENGTH_SHORT).show()
                 }
 
                 override fun handleFault(fault: BackendlessFault?) {
@@ -59,5 +61,5 @@ class MovieAdapter(var movieList: MutableList<MovieData>):
             })
     }
 
-    override fun getItemCount() = movieList.size
+    override fun getItemCount() = movieList!!.results!!.size
 }

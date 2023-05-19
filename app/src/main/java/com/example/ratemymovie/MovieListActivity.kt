@@ -29,6 +29,7 @@ class MovieListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMovieListBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         val userId = intent.getStringExtra(EXTRA_USER_ID)
         Log.d("onCreate", "$userId")
         // it's saying the userId is null..
@@ -48,19 +49,19 @@ class MovieListActivity : AppCompatActivity() {
             val movieDataService = RetrofitHelper.getInstance().create(MovieDataSevice::class.java)
             val movieDataCall = movieDataService.getMovieDataByTitle(name.toString(), Constants.API_KEY)
 
-            movieDataCall.enqueue(object: Callback<List<MovieData>>{
+            movieDataCall.enqueue(object: Callback<MovieWrapper>{
                 override fun onResponse(
-                    call: Call<List<MovieData>>,
-                    response: Response<List<MovieData>>
+                    call: Call<MovieWrapper>,
+                    response: Response<MovieWrapper>
                 ) {
-                    Log.d(TAG, "onResponse ${response.body()}")
+                    Log.d(TAG, "onResponse ${response.body()}\n${response.raw()}")
 
-                    adapter = MovieAdapter(response.body() as MutableList<MovieData>)
+                    adapter = MovieAdapter(response.body())
                     binding.recyclerViewActivityMovielist.adapter = adapter
                     binding.recyclerViewActivityMovielist.layoutManager = LinearLayoutManager(this@MovieListActivity)
                 }
 
-                override fun onFailure(call: Call<List<MovieData>>, t: Throwable) {
+                override fun onFailure(call: Call<MovieWrapper>, t: Throwable) {
                     Log.d(TAG, "onFailure: ${t.message}")
                 }
             })
@@ -69,9 +70,8 @@ class MovieListActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         val userId = intent.getStringExtra(EXTRA_USER_ID)
-        Log.d(TAG, "onStart: $userId")
         if(userId != null) {
-            retrieveAllData(userId)
+            //retrieveAllData(userId)
         }
     }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -85,7 +85,6 @@ class MovieListActivity : AppCompatActivity() {
             R.id.menu_login ->{
                 val loginIntent = Intent(this, LoginActivity :: class.java)
                 startActivity(loginIntent)
-                finish()
                 true
             }
             R.id.menu_Registration ->{
@@ -97,15 +96,15 @@ class MovieListActivity : AppCompatActivity() {
         }
     }
 
-    private fun retrieveAllData(userId : String) {
+    /*private fun retrieveAllData(userId : String) {
         val whereClause = "ownerId = '$userId'"
         val queryBuilder = DataQueryBuilder.create()
         queryBuilder.whereClause = whereClause
         Backendless.Data.of(MovieData::class.java).find(queryBuilder, object :
             AsyncCallback<List<MovieData?>?> {
-            override fun handleResponse(foundMovies: List<MovieData?>?) {
-                Log.d(TAG, "handleResponse: $foundMovies")
-                adapter = MovieAdapter(foundMovies as MutableList<MovieData>)
+            override fun handleResponse(foundLoans: List<MovieData?>?) {
+                Log.d(TAG, "handleResponse: $foundLoans")
+                adapter = MovieAdapter(foundLoans as MutableList<MovieData>)
                 binding.recyclerViewActivityMovielist.adapter = adapter
                 binding.recyclerViewActivityMovielist.layoutManager =
                     LinearLayoutManager(this@MovieListActivity)
@@ -118,5 +117,5 @@ class MovieListActivity : AppCompatActivity() {
             }
         })
     }
-
+*/
 }
